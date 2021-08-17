@@ -12,6 +12,12 @@ var clients = [
     {id: 7, nome: "Frango Temperado", telefone: "53561654128"},
     {id: 8, nome: "Kai'sa Ichatia", telefone: "53231656481"}
 ];
+function middleware (req, res, next) {
+    const {url, method} = request;
+    console.log(`${method} - ${url} at ${new Date()}`)
+}
+
+app.use(middleware)
 
 app.get('/clients', (req, res) => res.json(clients));
 
@@ -29,15 +35,24 @@ app.put('/clients/:id', (req, res) => {
     const id = req.params.id;
     const nome = req.body.nome;
     let client = clients.filter(value => value.id == id);
-    client[0].nome = nome;
-    res.json(client[0])
+    if(client == undefined){
+        res.status(400).send()
+    }else {
+        client.nome = nome;
+        res.status(200).json(client)
+    }
 
 })
 
 app.delete('/clients/:id', (req, res) => {
     const id = req.params.id;
-    // Q coisa feia kkk
-    clients = clients.filter(value => value.id != id)
-    res.json(clients)
+    const index = clients.findIndex(value => value.id == id);
+    if(index == -1){
+        res.status(400).send()
+    }else {
+        clients.splice(index, 1);
+        response.status(204).send();
+    }
+
 })
 app.listen(3000)
